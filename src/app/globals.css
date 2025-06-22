@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #1a237e 0%, #4a148c 100%);
+    min-height: 100vh;
+  }
+}
+
+@layer components {
+  .millionaire-button {
+    @apply bg-gradient-to-r from-millionaire-gold to-millionaire-orange text-black font-bold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200;
+  }
+  
+  .answer-button {
+    @apply bg-gradient-to-r from-blue-900 to-blue-700 text-white border-2 border-millionaire-gold rounded-lg p-4 hover:from-millionaire-gold hover:to-millionaire-orange hover:text-black transition-all duration-300 transform hover:scale-105;
+  }
+  
+  .answer-button.selected {
+    @apply from-millionaire-gold to-millionaire-orange text-black;
+  }
+  
+  .answer-button.correct {
+    @apply from-green-500 to-green-400 text-white animate-pulse-slow;
+  }
+  
+  .answer-button.incorrect {
+    @apply from-red-500 to-red-400 text-white;
+  }
+  
+  .lifeline-button {
+    @apply bg-gradient-to-r from-purple-600 to-purple-500 text-white rounded-full p-3 hover:from-purple-500 hover:to-purple-400 transition-all duration-200 transform hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  
+  .prize-level {
+    @apply bg-gradient-to-r from-blue-900 to-blue-700 text-white p-2 rounded border border-millionaire-gold;
+  }
+  
+  .prize-level.current {
+    @apply from-millionaire-gold to-millionaire-orange text-black animate-pulse-slow;
+  }
+  
+  .prize-level.safe {
+    @apply from-green-600 to-green-500;
+  }
+}
