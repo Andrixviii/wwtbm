@@ -53,7 +53,7 @@ const MainMenu: React.FC<MainMenuProps> = ({ onStartGame }) => {
         </div>
 
         {/* Prize Structure Preview */}
-        <div className="mt-8 bg-gradient-to-r from-millionaire-gold to-millionaire-orange p-4 rounded-xl shadow-xl max-w-md mx-auto">
+        <div className="mt-8 bg-gradient-to-r font-millionaire from-millionaire-gold to-millionaire-orange p-4 rounded-xl shadow-xl max-w-md mx-auto">
           <h3 className="text-lg font-bold text-black mb-3">Prize Structure</h3>
           <div className="grid grid-cols-2 gap-2 text-black text-sm">
             <div>1. $100</div>

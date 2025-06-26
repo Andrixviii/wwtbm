@@ -4,7 +4,7 @@
 
 @layer base {
   body {
-    font-family: 'Arial', sans-serif;
+    font-family: 'Quicksand', sans-serif;
     background: linear-gradient(135deg, #1a237e 0%, #4a148c 100%);
     min-height: 100vh;
   }

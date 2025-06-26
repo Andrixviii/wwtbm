@@ -15,6 +15,9 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link rel="icon" href="/trophy.svg" type="image/svg+xml"/>
+        <link rel="preconnect" href="https://fonts.googleapis.com"/>
+        <link rel="preconnect" href="https://fonts.gstatic.com"/>
+        <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet"></link>
       </head>
       <body>{children}</body>
     </html>

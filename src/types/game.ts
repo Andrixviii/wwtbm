@@ -41,4 +41,4 @@ export const PRIZE_LEVELS = [
   1000000
 ];
 
-export const SAFE_LEVELS = [4, 9, 14]; // Indices where players are guaranteed money
+export const SAFE_LEVELS = [4, 9, 14];

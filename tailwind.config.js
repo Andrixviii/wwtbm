@@ -12,6 +12,8 @@ module.exports = {
         'millionaire-gold': '#ffd700',
         'millionaire-orange': '#ff6f00',
         'millionaire-purple': '#4a148c',
+        'millionaire-brown': '#A86523',
+        'millionaire-brownOrange': '#E9A319',
       },
       fontFamily: {
         'millionaire': ['Arial', 'sans-serif'],

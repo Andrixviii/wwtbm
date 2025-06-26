@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { Question, GameState, PRIZE_LEVELS, SAFE_LEVELS } from '../types/game';
-import { QUESTIONS } from '../data/questions';
 import { Phone, Users, Scissors, Trophy, Home } from 'lucide-react';
 
 interface GameBoardProps {
@@ -10,6 +9,8 @@ interface GameBoardProps {
 }
 
 const GameBoard: React.FC<GameBoardProps> = ({ onGameEnd }) => {
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [loading, setLoading] = useState(true);
   const [gameState, setGameState] = useState<GameState>({
     currentQuestion: 0,
     score: 0,
@@ -23,44 +24,78 @@ const GameBoard: React.FC<GameBoardProps> = ({ onGameEnd }) => {
     },
     eliminatedOptions: [],
   });
+
   const [audienceLoading, setAudienceLoading] = useState(false);
   const [friendLoading, setFriendLoading] = useState(false);
+  const [showContent, setShowContent] = useState(false);
 
-  const currentQuestion = QUESTIONS[gameState.currentQuestion];
+  useEffect(() => {
+    const timer = setTimeout(() => setShowContent(true), 1500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Fetch questions from API
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      setLoading(true);
+      const res = await fetch('/api/questions');
+      const data = await res.json();
+
+      const merged = [...(data.easy || []), ...(data.medium || []), ...(data.hard || [])];
+
+      const mapped: Question[] = merged.map((q: any) => ({
+        id: q.id,
+        question: q.question,
+        options: [q.option_a, q.option_b, q.option_c, q.option_d],
+        correctAnswer: 'ABCD'.indexOf(q.correct_answer.toUpperCase()),
+        difficulty: q.difficulty,
+      }));
+
+      setQuestions(mapped);
+      setLoading(false);
+    };
+    fetchQuestions();
+  }, []);
+
+  if (!showContent || loading) {
+    return (
+      <div className='flex flex-col items-center justify-center min-h-screen'>
+        <img src="/assets/img/Search.svg" alt="Loading..." className="w-60 h-60" />
+        <p className='text-lg font-bold text-orange-400'>Searching....</p>
+      </div>
+    );
+  }
+
+  if (!questions.length) {
+    return <div className="text-center text-red-500 mt-10">No questions available.</div>;
+  }
+
+  const currentQuestion = questions[gameState.currentQuestion];
 
   const handleAnswerSelect = (answerIndex: number) => {
     if (gameState.showAnswer || gameState.eliminatedOptions.includes(answerIndex)) return;
-    
-    setGameState(prev => ({
-      ...prev,
-      selectedAnswer: answerIndex,
-    }));
+    setGameState(prev => ({ ...prev, selectedAnswer: answerIndex }));
   };
 
   const handleFinalAnswer = () => {
     if (gameState.selectedAnswer === null) return;
-
     setGameState(prev => ({ ...prev, showAnswer: true }));
 
     setTimeout(() => {
       const isCorrect = gameState.selectedAnswer === currentQuestion.correctAnswer;
 
       if (isCorrect) {
-        // Play correct answer sound effect
         const audio = new Audio('/sfx/correct.mp3');
         audio.play();
-
         const newScore = gameState.currentQuestion;
-        
-        if (gameState.currentQuestion === QUESTIONS.length - 1) {
-          // Won the game!
+
+        if (gameState.currentQuestion === questions.length - 1) {
           setGameState(prev => ({
             ...prev,
             gameStatus: 'won',
             score: newScore,
           }));
         } else {
-          // Next question
           setGameState(prev => ({
             ...prev,
             currentQuestion: prev.currentQuestion + 1,
@@ -72,18 +107,11 @@ const GameBoard: React.FC<GameBoardProps> = ({ onGameEnd }) => {
           }));
         }
       } else {
-        // Wrong answer - play sound effect
         const audio = new Audio('/sfx/wrong.mp3');
         audio.play();
-
         const safeLevel = SAFE_LEVELS.filter(level => level <= gameState.currentQuestion).pop();
         const finalScore = safeLevel !== undefined ? safeLevel : 0;
-
-        setGameState(prev => ({
-          ...prev,
-          gameStatus: 'lost',
-          score: finalScore,
-        }));
+        setGameState(prev => ({ ...prev, gameStatus: 'lost', score: finalScore }));
       }
     }, 3000);
   };
@@ -91,21 +119,14 @@ const GameBoard: React.FC<GameBoardProps> = ({ onGameEnd }) => {
   const handleWalkAway = () => {
     const safeLevel = SAFE_LEVELS.filter(level => level < gameState.currentQuestion).pop();
     const finalScore = safeLevel !== undefined ? safeLevel : gameState.currentQuestion - 1;
-    
-    setGameState(prev => ({
-      ...prev,
-      gameStatus: 'won',
-      score: Math.max(0, finalScore),
-    }));
+    setGameState(prev => ({ ...prev, gameStatus: 'won', score: Math.max(0, finalScore) }));
   };
 
   const useFiftyFifty = () => {
     if (gameState.usedLifelines.fiftyFifty) return;
-
     const correctAnswer = currentQuestion.correctAnswer;
     const wrongAnswers = [0, 1, 2, 3].filter(i => i !== correctAnswer);
     const toEliminate = wrongAnswers.sort(() => Math.random() - 0.5).slice(0, 2);
-
     setGameState(prev => ({
       ...prev,
       usedLifelines: { ...prev.usedLifelines, fiftyFifty: true },
@@ -115,74 +136,46 @@ const GameBoard: React.FC<GameBoardProps> = ({ onGameEnd }) => {
 
   const useAskAudience = () => {
     if (gameState.usedLifelines.askAudience || audienceLoading) return;
-
     setAudienceLoading(true);
 
     setTimeout(() => {
       const correctAnswer = currentQuestion.correctAnswer;
       const questionNumber = gameState.currentQuestion + 1;
-      
-      // Calculate audience accuracy based on question difficulty
-      // Early questions: 70-85% chance audience is mostly right
-      // Middle questions: 50-70% chance audience is mostly right  
-      // Late questions: 30-50% chance audience is mostly right
       let audienceAccuracy;
       if (questionNumber <= 5) {
-        audienceAccuracy = 0.7 + Math.random() * 0.15; // 70-85%
+        audienceAccuracy = 0.7 + Math.random() * 0.15;
       } else if (questionNumber <= 10) {
-        audienceAccuracy = 0.5 + Math.random() * 0.2; // 50-70%
+        audienceAccuracy = 0.5 + Math.random() * 0.2;
       } else {
-        audienceAccuracy = 0.5 + Math.random() * 0.2; // 30-50%
+        audienceAccuracy = 0.3 + Math.random() * 0.2;
       }
 
       const votes = [0, 0, 0, 0];
-      
       if (Math.random() < audienceAccuracy) {
-        // Audience leans toward correct answer
-        const correctVotes = Math.floor(Math.random() * 30) + 35; // 35-65%
+        const correctVotes = Math.floor(Math.random() * 30) + 35;
         votes[correctAnswer] = correctVotes;
-        
-        // Distribute remaining votes among wrong answers
-        let remainingVotes = 100 - correctVotes;
+        let remaining = 100 - correctVotes;
         const wrongAnswers = [0, 1, 2, 3].filter(i => i !== correctAnswer);
-        
-        wrongAnswers.forEach((answerIndex, i) => {
-          if (i === wrongAnswers.length - 1) {
-            votes[answerIndex] = remainingVotes;
-          } else {
-            const vote = Math.floor(Math.random() * (remainingVotes / (wrongAnswers.length - i)));
-            votes[answerIndex] = vote;
-            remainingVotes -= vote;
-          }
+        wrongAnswers.forEach((i, idx) => {
+          const v = idx === wrongAnswers.length - 1 ? remaining : Math.floor(Math.random() * (remaining / (wrongAnswers.length - idx)));
+          votes[i] = v;
+          remaining -= v;
         });
       } else {
-        // Audience is confused/wrong - distribute votes more randomly
         const wrongAnswers = [0, 1, 2, 3].filter(i => i !== correctAnswer);
-        const popularWrongAnswer = wrongAnswers[Math.floor(Math.random() * wrongAnswers.length)];
-        
-        // Give the popular wrong answer the most votes
-        votes[popularWrongAnswer] = Math.floor(Math.random() * 25) + 30; // 30-55%
-        
-        // Distribute remaining votes
-        let remainingVotes = 100 - votes[popularWrongAnswer];
-        const otherAnswers = [0, 1, 2, 3].filter(i => i !== popularWrongAnswer);
-        
-        otherAnswers.forEach((answerIndex, i) => {
-          if (i === otherAnswers.length - 1) {
-            votes[answerIndex] = remainingVotes;
-          } else {
-            const vote = Math.floor(Math.random() * (remainingVotes / (otherAnswers.length - i)));
-            votes[answerIndex] = vote;
-            remainingVotes -= vote;
-          }
+        const mainWrong = wrongAnswers[Math.floor(Math.random() * wrongAnswers.length)];
+        votes[mainWrong] = Math.floor(Math.random() * 25) + 30;
+        let remaining = 100 - votes[mainWrong];
+        const others = [0, 1, 2, 3].filter(i => i !== mainWrong);
+        others.forEach((i, idx) => {
+          const v = idx === others.length - 1 ? remaining : Math.floor(Math.random() * (remaining / (others.length - idx)));
+          votes[i] = v;
+          remaining -= v;
         });
       }
 
-      // Ensure votes add up to 100
-      const totalVotes = votes.reduce((sum, vote) => sum + vote, 0);
-      if (totalVotes !== 100) {
-        votes[correctAnswer] += (100 - totalVotes);
-      }
+      const total = votes.reduce((a, b) => a + b, 0);
+      if (total !== 100) votes[correctAnswer] += 100 - total;
 
       setGameState(prev => ({
         ...prev,
@@ -190,42 +183,29 @@ const GameBoard: React.FC<GameBoardProps> = ({ onGameEnd }) => {
         audienceVotes: votes,
       }));
       setAudienceLoading(false);
-    }, 2000); // 2 detik delay
+    }, 2000);
   };
 
   const usePhoneAFriend = () => {
     if (gameState.usedLifelines.phoneAFriend || friendLoading) return;
-
     setFriendLoading(true);
 
     setTimeout(() => {
-      const correctAnswer = currentQuestion.correctAnswer;
-      const questionNumber = gameState.currentQuestion + 1;
-      
-      // Calculate friend's accuracy based on question difficulty
-      // Early questions: 80-90% chance friend is right
-      // Middle questions: 60-75% chance friend is right
-      // Late questions: 40-60% chance friend is right
-      let friendAccuracy;
-      if (questionNumber <= 5) {
-        friendAccuracy = 0.8 + Math.random() * 0.1; // 80-90%
-      } else if (questionNumber <= 10) {
-        friendAccuracy = 0.6 + Math.random() * 0.15; // 60-75%
-      } else {
-        friendAccuracy = 0.4 + Math.random() * 0.2; // 40-60%
-      }
+      const correct = currentQuestion.correctAnswer;
+      const num = gameState.currentQuestion + 1;
+      let accuracy;
+      if (num <= 5) accuracy = 0.8 + Math.random() * 0.1;
+      else if (num <= 10) accuracy = 0.6 + Math.random() * 0.15;
+      else accuracy = 0.4 + Math.random() * 0.2;
 
       let suggestion;
       let confidence;
-      
-      if (Math.random() < friendAccuracy) {
-        // Friend suggests correct answer
-        suggestion = correctAnswer;
+      if (Math.random() < accuracy) {
+        suggestion = correct;
         confidence = Math.random() < 0.7 ? 'confident' : 'pretty sure';
       } else {
-        // Friend suggests wrong answer
-        const wrongAnswers = [0, 1, 2, 3].filter(i => i !== correctAnswer);
-        suggestion = wrongAnswers[Math.floor(Math.random() * wrongAnswers.length)];
+        const wrongs = [0, 1, 2, 3].filter(i => i !== correct);
+        suggestion = wrongs[Math.floor(Math.random() * wrongs.length)];
         confidence = Math.random() < 0.5 ? 'not sure' : 'think';
       }
 
@@ -236,16 +216,16 @@ const GameBoard: React.FC<GameBoardProps> = ({ onGameEnd }) => {
         friendConfidence: confidence,
       }));
       setFriendLoading(false);
-    }, 2000); // 2 detik delay
+    }, 2000);
   };
 
-  if (gameState.gameStatus === 'won') {
+   if (gameState.gameStatus === 'won') {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
         <div className="bg-gradient-to-r from-millionaire-gold to-millionaire-orange p-8 rounded-xl shadow-2xl text-center max-w-md w-full">
           <Trophy className="w-16 h-16 mx-auto mb-4 text-millionaire-purple" />
           <h1 className="text-3xl font-bold text-millionaire-purple mb-4">
-            {gameState.score === QUESTIONS.length - 1 ? 'MILLIONAIRE!' : 'Congratulations!'}
+            {gameState.score === questions.length - 1 ? 'MILLIONAIRE!' : 'Congratulations!'}
           </h1>
           <p className="text-xl text-millionaire-purple mb-6">
             You won: ${PRIZE_LEVELS[gameState.score]?.toLocaleString() || '0'}
@@ -302,7 +282,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onGameEnd }) => {
           <div className="lg:col-span-2">
             <div className="bg-gradient-to-r from-millionaire-blue to-millionaire-purple p-6 rounded-xl shadow-2xl mb-6">
               <h2 className="text-xl font-bold text-white mb-4">
-                Question {gameState.currentQuestion + 1} of {QUESTIONS.length}
+                Question {gameState.currentQuestion + 1} of {questions.length}
               </h2>
               <p className="text-lg text-white mb-6">{currentQuestion.question}</p>
               
