@@ -34,7 +34,6 @@ const GameBoard: React.FC<GameBoardProps> = ({ onGameEnd }) => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Fetch questions from API
   useEffect(() => {
     const fetchQuestions = async () => {
       setLoading(true);
@@ -60,7 +59,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onGameEnd }) => {
   if (!showContent || loading) {
     return (
       <div className='flex flex-col items-center justify-center min-h-screen'>
-        <img src="/assets/img/Search.svg" alt="Loading..." className="w-60 h-60" />
+        <img src="/assets/img/Search.svg" alt="Loading..." className="w-48 h-48" />
         <p className='text-lg font-bold text-orange-400'>Searching....</p>
       </div>
     );
