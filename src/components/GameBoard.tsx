@@ -2,7 +2,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { Question, GameState, PRIZE_LEVELS, SAFE_LEVELS } from '../types/game';
-import { Phone, Users, Scissors, Trophy, Home } from 'lucide-react';
+import FuzzyText from '../components/ui/fuzzyText';
+import {
+  Phone, Users, Scissors, Trophy, Home, BookOpen, Scroll, Crown,
+  Castle, Clock, Award, History, Globe, Flame, Target, PhoneCall,
+  AlertCircle, CheckCircle, XCircle, Eye, EyeOff, Coins
+} from 'lucide-react';
 
 interface GameBoardProps {
   onGameEnd: () => void;
@@ -28,6 +33,11 @@ const GameBoard: React.FC<GameBoardProps> = ({ onGameEnd }) => {
   const [audienceLoading, setAudienceLoading] = useState(false);
   const [friendLoading, setFriendLoading] = useState(false);
   const [showContent, setShowContent] = useState(false);
+
+  // Custom UI states
+  const [showMobileLifelines, setShowMobileLifelines] = useState(false);
+  const [showMobilePrizes, setShowMobilePrizes] = useState(false);
+  const [pulseAnswer, setPulseAnswer] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => setShowContent(true), 1500);
@@ -56,17 +66,23 @@ const GameBoard: React.FC<GameBoardProps> = ({ onGameEnd }) => {
     fetchQuestions();
   }, []);
 
+  useEffect(() => {
+    if (gameState.selectedAnswer !== null) {
+      setPulseAnswer(true);
+      setTimeout(() => setPulseAnswer(false), 1000);
+    }
+  }, [gameState.selectedAnswer]);
+
   if (!showContent || loading) {
     return (
       <div className='flex flex-col items-center justify-center min-h-screen'>
-        <img src="/assets/img/Search.svg" alt="Loading..." className="w-48 h-48" />
         <p className='text-lg font-bold text-orange-400'>Searching....</p>
       </div>
     );
   }
 
   if (!questions.length) {
-    return <div className="text-center text-red-500 mt-10">No questions available.</div>;
+    return <FuzzyText baseIntensity={0.2} hoverIntensity={0.5} enableHover={true}>404</FuzzyText>
   }
 
   const currentQuestion = questions[gameState.currentQuestion];
@@ -218,74 +234,147 @@ const GameBoard: React.FC<GameBoardProps> = ({ onGameEnd }) => {
     }, 2000);
   };
 
-   if (gameState.gameStatus === 'won') {
+  // WIN SCREEN
+  if (gameState.gameStatus === 'won') {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <div className="bg-gradient-to-r from-millionaire-gold to-millionaire-orange p-8 rounded-xl shadow-2xl text-center max-w-md w-full">
-          <Trophy className="w-16 h-16 mx-auto mb-4 text-millionaire-purple" />
-          <h1 className="text-3xl font-bold text-millionaire-purple mb-4">
+      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-amber-900 via-orange-900 to-red-900">
+        <div className="bg-gradient-to-r from-amber-600 to-orange-600 p-8 rounded-2xl shadow-2xl text-center max-w-md w-full border-2 border-amber-400 relative">
+          <div className="absolute -top-6 -right-6 w-12 h-12 bg-amber-400 rounded-full flex items-center justify-center animate-bounce">
+            <Crown className="w-6 h-6 text-amber-900" />
+          </div>
+          <Trophy className="w-20 h-20 mx-auto mb-6 text-amber-900 animate-pulse" />
+          <h1 className="text-4xl font-bold text-amber-900 mb-4">
             {gameState.score === questions.length - 1 ? 'MILLIONAIRE!' : 'Congratulations!'}
           </h1>
-          <p className="text-xl text-millionaire-purple mb-6">
+          <p className="text-2xl text-amber-900 mb-6 font-semibold">
             You won: ${PRIZE_LEVELS[gameState.score]?.toLocaleString() || '0'}
           </p>
+          <div className="flex items-center justify-center gap-2 mb-6">
+            <Award className="w-6 h-6 text-amber-900" />
+            <span className="text-amber-900 font-medium">You mastered the challenge!</span>
+          </div>
           <button
             onClick={onGameEnd}
-            className="millionaire-button w-full"
+            className="w-full bg-amber-800 hover:bg-amber-700 text-amber-100 font-bold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg"
           >
-            Play Again
+            <div className="flex items-center justify-center gap-2">
+              <History className="w-5 h-5" />
+              <span>Play Again</span>
+            </div>
           </button>
         </div>
       </div>
     );
   }
 
+  // LOSS SCREEN
   if (gameState.gameStatus === 'lost') {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <div className="bg-gradient-to-r from-red-600 to-red-500 p-8 rounded-xl shadow-2xl text-center max-w-md w-full">
-          <h1 className="text-3xl font-bold text-white mb-4">Game Over!</h1>
-          <p className="text-xl text-white mb-6">
+      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-red-900 via-orange-900 to-amber-900">
+        <div className="bg-gradient-to-r from-red-600 to-red-500 p-8 rounded-2xl shadow-2xl text-center max-w-md w-full border-2 border-red-400 relative">
+          <div className="absolute -top-6 -right-6 w-12 h-12 bg-red-400 rounded-full flex items-center justify-center animate-pulse">
+            <XCircle className="w-6 h-6 text-red-900" />
+          </div>
+          <AlertCircle className="w-20 h-20 mx-auto mb-6 text-red-100 animate-pulse" />
+          <h1 className="text-4xl font-bold text-red-100 mb-4">Game Over!</h1>
+          <p className="text-2xl text-red-100 mb-6 font-semibold">
             You won: ${PRIZE_LEVELS[gameState.score]?.toLocaleString() || '0'}
           </p>
+          <div className="flex items-center justify-center gap-2 mb-6">
+            <Scroll className="w-6 h-6 text-red-100" />
+            <span className="text-red-100 font-medium">Try again next time!</span>
+          </div>
           <button
             onClick={onGameEnd}
-            className="millionaire-button w-full"
+            className="w-full bg-red-800 hover:bg-red-700 text-red-100 font-bold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg"
           >
-            Play Again
+            <div className="flex items-center justify-center gap-2">
+              <History className="w-5 h-5" />
+              <span>Play Again</span>
+            </div>
           </button>
         </div>
       </div>
     );
   }
 
+  // MAIN GAME UI
   return (
-    <div className="min-h-screen p-4">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-amber-900 via-orange-900 to-red-900 p-2 md:p-4">
+      {/* Floating historical elements */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden opacity-10">
+        <Scroll className="absolute top-10 left-10 w-8 h-8 text-amber-400 animate-pulse" />
+        <Crown className="absolute top-20 right-20 w-6 h-6 text-orange-400 animate-bounce" style={{animationDelay: '1s'}} />
+        <Castle className="absolute bottom-20 left-20 w-10 h-10 text-red-400 animate-pulse" style={{animationDelay: '2s'}} />
+        <Globe className="absolute bottom-10 right-10 w-7 h-7 text-amber-400 animate-spin" style={{animationDuration: '10s'}} />
+      </div>
+
+      <div className="max-w-7xl mx-auto relative z-10">
         {/* Header */}
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-millionaire-gold">
-            Who Wants to Be a Millionaire?
-          </h1>
+        <div className="flex justify-between items-center mb-4 md:mb-6 bg-gradient-to-r from-amber-800/50 to-orange-800/50 backdrop-blur-sm rounded-xl p-4 border border-amber-600/30">
+          <div className="flex items-center gap-3">
+            <BookOpen className="w-6 h-6 md:w-8 md:h-8 text-amber-400" />
+            <h1 className="text-lg md:text-2xl font-bold text-amber-100">
+              Who Wants to Be a Millionaire?
+            </h1>
+          </div>
           <button
             onClick={onGameEnd}
-            className="flex items-center gap-2 bg-gray-600 hover:bg-gray-500 text-white px-4 py-2 rounded-lg transition-colors"
+            className="flex items-center gap-2 bg-red-700/80 hover:bg-red-600 text-amber-100 px-3 py-2 md:px-4 md:py-2 rounded-lg transition-all duration-300 hover:scale-105"
           >
             <Home className="w-4 h-4" />
-            Menu
+            <span className="hidden md:inline">Menu</span>
           </button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Mobile Lifelines Toggle */}
+        <div className="md:hidden mb-4 flex gap-2">
+          <button
+            onClick={() => setShowMobileLifelines(!showMobileLifelines)}
+            className="flex-1 bg-gradient-to-r from-purple-700 to-blue-700 text-white px-4 py-3 rounded-xl font-semibold flex items-center justify-center gap-2"
+          >
+            <Flame className="w-5 h-5" />
+            Lifelines
+            {showMobileLifelines ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+          </button>
+          <button
+            onClick={() => setShowMobilePrizes(!showMobilePrizes)}
+            className="flex-1 bg-gradient-to-r from-orange-700 to-red-700 text-white px-4 py-3 rounded-xl font-semibold flex items-center justify-center gap-2"
+          >
+            <Coins className="w-5 h-5" />
+            Prizes
+            {showMobilePrizes ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 md:gap-6">
           {/* Question Area */}
-          <div className="lg:col-span-2">
-            <div className="bg-gradient-to-r from-millionaire-blue to-millionaire-purple p-6 rounded-xl shadow-2xl mb-6">
-              <h2 className="text-xl font-bold text-white mb-4">
-                Question {gameState.currentQuestion + 1} of {questions.length}
-              </h2>
-              <p className="text-lg text-white mb-6">{currentQuestion.question}</p>
+          <div className="lg:col-span-3 order-2 lg:order-1">
+            <div className="bg-gradient-to-r from-amber-800/60 to-orange-800/60 backdrop-blur-sm p-4 md:p-6 rounded-2xl shadow-2xl mb-4 md:mb-6 border-2 border-amber-600/30 relative">
+              <div className="absolute top-3 left-3 w-3 h-3 bg-amber-400 rounded-full animate-pulse"></div>
+              <div className="absolute top-3 right-3 w-3 h-3 bg-orange-400 rounded-full animate-pulse" style={{animationDelay: '0.5s'}}></div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <Scroll className="w-6 h-6 text-amber-400" />
+                  <h2 className="text-lg md:text-xl font-bold text-amber-100">
+                    Question {gameState.currentQuestion + 1} of {questions.length}
+                  </h2>
+                </div>
+                {/* Timer (dummy, bisa diisi logic timer jika mau) */}
+                {/* <div className="flex items-center gap-2 bg-amber-700/50 px-3 py-1 rounded-full">
+                  <Clock className="w-4 h-4 text-amber-300" />
+                  <span className="text-amber-300 text-sm font-medium">{timeLeft}s</span>
+                </div> */}
+              </div>
+              
+              <div className="bg-gradient-to-r from-amber-900/40 to-orange-900/40 p-4 md:p-6 rounded-xl border border-amber-600/20 mb-6">
+                <p className="text-base md:text-lg text-amber-100 leading-relaxed font-medium">
+                  {currentQuestion.question}
+                </p>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                 {currentQuestion.options.map((option, index) => {
                   const isEliminated = gameState.eliminatedOptions.includes(index);
                   const isSelected = gameState.selectedAnswer === index;
@@ -297,16 +386,31 @@ const GameBoard: React.FC<GameBoardProps> = ({ onGameEnd }) => {
                       key={index}
                       onClick={() => handleAnswerSelect(index)}
                       disabled={isEliminated || gameState.showAnswer}
-                      className={`answer-button ${
-                        isSelected ? 'selected' : ''
-                      } ${isCorrect ? 'correct' : ''} ${
-                        isIncorrect ? 'incorrect' : ''
-                      } ${isEliminated ? 'opacity-30' : ''}`}
+                      className={`
+                        relative p-4 md:p-6 rounded-xl font-medium text-left transition-all duration-300 transform hover:scale-105 border-2
+                        ${isSelected && !gameState.showAnswer ? 'bg-gradient-to-r from-blue-600 to-purple-600 border-blue-400 text-white shadow-lg shadow-blue-500/50' : ''}
+                        ${isCorrect ? 'bg-gradient-to-r from-green-600 to-emerald-600 border-green-400 text-white shadow-lg shadow-green-500/50' : ''}
+                        ${isIncorrect ? 'bg-gradient-to-r from-red-600 to-rose-600 border-red-400 text-white shadow-lg shadow-red-500/50' : ''}
+                        ${!isSelected && !gameState.showAnswer && !isEliminated ? 'bg-gradient-to-r from-amber-700/60 to-orange-700/60 border-amber-600/30 text-amber-100 hover:border-amber-400/50 hover:shadow-lg' : ''}
+                        ${isEliminated ? 'opacity-30 cursor-not-allowed bg-gray-800/50 border-gray-600' : ''}
+                        ${pulseAnswer && isSelected ? 'animate-pulse' : ''}
+                      `}
                     >
-                      <span className="font-bold mr-2">
-                        {String.fromCharCode(65 + index)}:
-                      </span>
-                      {option}
+                      <div className="flex items-center gap-3">
+                        <div className={`
+                          w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center font-bold text-sm md:text-base
+                          ${isCorrect ? 'bg-green-500' : isIncorrect ? 'bg-red-500' : isSelected ? 'bg-blue-500' : 'bg-amber-600'}
+                        `}>
+                          {String.fromCharCode(65 + index)}
+                        </div>
+                        <span className="text-sm md:text-base flex-1">{option}</span>
+                      </div>
+                      {isCorrect && (
+                        <CheckCircle className="absolute top-2 right-2 w-6 h-6 text-green-300" />
+                      )}
+                      {isIncorrect && (
+                        <XCircle className="absolute top-2 right-2 w-6 h-6 text-red-300" />
+                      )}
                     </button>
                   );
                 })}
@@ -314,119 +418,165 @@ const GameBoard: React.FC<GameBoardProps> = ({ onGameEnd }) => {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-4 justify-center">
+            <div className="flex flex-col md:flex-row gap-3 md:gap-4 justify-center">
               <button
                 onClick={handleFinalAnswer}
                 disabled={gameState.selectedAnswer === null || gameState.showAnswer}
-                className="millionaire-button disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 md:flex-none bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 disabled:from-gray-600 disabled:to-gray-500 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 disabled:scale-100 disabled:cursor-not-allowed shadow-lg flex items-center justify-center gap-2"
               >
-                Final Answer
+                <CheckCircle className="w-5 h-5" />
+                <span>Final Answer</span>
               </button>
               <button
                 onClick={handleWalkAway}
                 disabled={gameState.showAnswer}
-                className="bg-gray-600 hover:bg-gray-500 text-white font-bold py-3 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 md:flex-none bg-gradient-to-r from-red-700 to-red-600 hover:from-red-600 hover:to-red-500 disabled:from-gray-600 disabled:to-gray-500 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 disabled:scale-100 disabled:cursor-not-allowed shadow-lg flex items-center justify-center gap-2"
               >
-                Walk Away
+                <Home className="w-5 h-5" />
+                <span>Walk Away</span>
               </button>
             </div>
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-6">
+          <div className={`space-y-4 order-1 lg:order-2 ${showMobileLifelines || showMobilePrizes ? 'block' : 'hidden'} md:block`}>
             {/* Lifelines */}
-            <div className="bg-gradient-to-r from-millionaire-purple to-millionaire-blue p-4 rounded-xl shadow-xl">
-              <h3 className="text-lg font-bold text-white mb-4">Lifelines</h3>
+            <div className={`bg-gradient-to-br from-purple-800/60 to-blue-800/60 backdrop-blur-sm p-4 md:p-6 rounded-2xl shadow-xl border-2 border-purple-600/30 relative ${!showMobileLifelines ? 'hidden md:block' : ''}`}>
+              <div className="absolute top-3 left-3 w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
+              <div className="absolute top-3 right-3 w-2 h-2 bg-blue-400 rounded-full animate-pulse" style={{animationDelay: '0.5s'}}></div>
+              
+              <div className="flex items-center gap-2 mb-4">
+                <Flame className="w-5 h-5 md:w-6 md:h-6 text-purple-400" />
+                <h3 className="text-base md:text-lg font-bold text-purple-100">Lifelines</h3>
+              </div>
+              
               <div className="space-y-3">
                 <button
                   onClick={useFiftyFifty}
                   disabled={gameState.usedLifelines.fiftyFifty || gameState.showAnswer}
-                  className="lifeline-button w-full flex items-center justify-center gap-2"
+                  className={`w-full p-3 md:p-4 rounded-xl font-medium text-sm md:text-base transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2 border-2 ${
+                    gameState.usedLifelines.fiftyFifty 
+                      ? 'bg-gray-700 border-gray-600 text-gray-400 cursor-not-allowed' 
+                      : 'bg-gradient-to-r from-red-600 to-pink-600 border-red-500 text-white hover:shadow-lg shadow-red-500/50'
+                  }`}
                 >
-                  <Scissors className="w-5 h-5" />
-                  50:50
+                  <Target className="w-4 h-4 md:w-5 md:h-5" />
+                  <span>50:50</span>
                 </button>
+                
                 <button
                   onClick={useAskAudience}
                   disabled={gameState.usedLifelines.askAudience || gameState.showAnswer}
-                  className="lifeline-button w-full flex items-center justify-center gap-2"
+                  className={`w-full p-3 md:p-4 rounded-xl font-medium text-sm md:text-base transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2 border-2 ${
+                    gameState.usedLifelines.askAudience 
+                      ? 'bg-gray-700 border-gray-600 text-gray-400 cursor-not-allowed' 
+                      : 'bg-gradient-to-r from-green-600 to-emerald-600 border-green-500 text-white hover:shadow-lg shadow-green-500/50'
+                  }`}
                 >
-                  <Users className="w-5 h-5" />
-                  Ask Audience
+                  <Users className="w-4 h-4 md:w-5 md:h-5" />
+                  <span>Ask Audience</span>
                 </button>
+                
                 <button
                   onClick={usePhoneAFriend}
                   disabled={gameState.usedLifelines.phoneAFriend || gameState.showAnswer}
-                  className="lifeline-button w-full flex items-center justify-center gap-2"
+                  className={`w-full p-3 md:p-4 rounded-xl font-medium text-sm md:text-base transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2 border-2 ${
+                    gameState.usedLifelines.phoneAFriend 
+                      ? 'bg-gray-700 border-gray-600 text-gray-400 cursor-not-allowed' 
+                      : 'bg-gradient-to-r from-blue-600 to-cyan-600 border-blue-500 text-white hover:shadow-lg shadow-blue-500/50'
+                  }`}
                 >
-                  <Phone className="w-5 h-5" />
-                  Phone a Friend
+                  <PhoneCall className="w-4 h-4 md:w-5 md:h-5" />
+                  <span>Phone a Friend</span>
                 </button>
               </div>
             </div>
+
+            {/* Audience Loading */}
             {audienceLoading && (
-              <div className="bg-gradient-to-r from-green-600 to-green-500 p-4 rounded-xl shadow-xl text-center text-white animate-pulse">
-                Meminta pendapat audiens...
+              <div className="bg-gradient-to-r from-green-600 to-emerald-600 p-4 rounded-2xl shadow-xl text-center text-white animate-pulse border-2 border-green-400">
+                <Users className="w-8 h-8 mx-auto mb-2" />
+                <p className="font-medium">Consulting audience...</p>
               </div>
             )}
+
+            {/* Audience Votes */}
             {gameState.audienceVotes && (
-              <div className="bg-gradient-to-r from-green-600 to-green-500 p-4 rounded-xl shadow-xl">
-                <h3 className="text-lg font-bold text-white mb-4">Audience Says:</h3>
+              <div className="bg-gradient-to-r from-green-600 to-emerald-600 p-4 rounded-2xl shadow-xl border-2 border-green-400">
+                <div className="flex items-center gap-2 mb-4">
+                  <Users className="w-5 h-5 text-white" />
+                  <h3 className="text-lg font-bold text-white">Audience Says:</h3>
+                </div>
                 <div className="space-y-2">
                   {gameState.audienceVotes.map((votes, index) => (
                     <div key={index} className="flex items-center gap-2">
-                      <span className="text-white font-bold w-6">
+                      <span className="text-white font-bold w-6 text-center">
                         {String.fromCharCode(65 + index)}:
                       </span>
-                      <div className="flex-1 bg-white bg-opacity-20 rounded-full h-4">
+                      <div className="flex-1 bg-white/20 rounded-full h-3">
                         <div
-                          className="bg-white h-4 rounded-full transition-all duration-1000"
+                          className="bg-white h-3 rounded-full transition-all duration-1000"
                           style={{ width: `${votes}%` }}
                         />
                       </div>
-                      <span className="text-white text-sm w-8">{votes}%</span>
+                      <span className="text-white text-sm font-medium w-12 text-right">{votes}%</span>
                     </div>
                   ))}
                 </div>
-                <p className="text-xs text-white mt-2 opacity-75">
-                  Remember: The audience can be wrong too!
+                <p className="text-xs text-white/80 mt-3 italic">
+                  Audience can be wrong - trust your knowledge!
                 </p>
               </div>
             )}
 
-            {/* Friend Suggestion */}
+            {/* Friend Loading */}
             {friendLoading && (
-              <div className="bg-gradient-to-r from-blue-600 to-blue-500 p-4 rounded-xl shadow-xl text-center text-white animate-pulse">
-                Menghubungi teman...
+              <div className="bg-gradient-to-r from-blue-600 to-cyan-600 p-4 rounded-2xl shadow-xl text-center text-white animate-pulse border-2 border-blue-400">
+                <PhoneCall className="w-8 h-8 mx-auto mb-2" />
+                <p className="font-medium">Contacting friend...</p>
               </div>
             )}
+
+            {/* Friend Suggestion */}
             {gameState.friendSuggestion !== undefined && (
-              <div className="bg-gradient-to-r from-blue-600 to-blue-500 p-4 rounded-xl shadow-xl">
-                <h3 className="text-lg font-bold text-white mb-2">Friend Says:</h3>
-                <p className="text-white mb-2">
-                  {gameState.friendConfidence === 'confident' && 
-                    `"I'm confident it's ${String.fromCharCode(65 + gameState.friendSuggestion)}!"`
-                  }
-                  {gameState.friendConfidence === 'pretty sure' && 
-                    `"I'm pretty sure it's ${String.fromCharCode(65 + gameState.friendSuggestion)}."`
-                  }
-                  {gameState.friendConfidence === 'think' && 
-                    `"I think it might be ${String.fromCharCode(65 + gameState.friendSuggestion)}, but I'm not certain."`
-                  }
-                  {gameState.friendConfidence === 'not sure' && 
-                    `"I'm really not sure, but maybe ${String.fromCharCode(65 + gameState.friendSuggestion)}?"`
-                  }
-                </p>
-                <p className="text-xs text-white opacity-75">
+              <div className="bg-gradient-to-r from-blue-600 to-cyan-600 p-4 rounded-2xl shadow-xl border-2 border-blue-400">
+                <div className="flex items-center gap-2 mb-3">
+                  <PhoneCall className="w-5 h-5 text-white" />
+                  <h3 className="text-lg font-bold text-white">Friend Says:</h3>
+                </div>
+                <div className="bg-blue-800/50 p-3 rounded-lg mb-3">
+                  <p className="text-white italic">
+                    {gameState.friendConfidence === 'confident' && 
+                      `"I'm confident it's ${String.fromCharCode(65 + gameState.friendSuggestion)}!"`
+                    }
+                    {gameState.friendConfidence === 'pretty sure' && 
+                      `"I'm pretty sure it's ${String.fromCharCode(65 + gameState.friendSuggestion)}."`
+                    }
+                    {gameState.friendConfidence === 'think' && 
+                      `"I think it might be ${String.fromCharCode(65 + gameState.friendSuggestion)}, but I'm not certain."`
+                    }
+                    {gameState.friendConfidence === 'not sure' && 
+                      `"I'm really not sure, but maybe ${String.fromCharCode(65 + gameState.friendSuggestion)}?"`
+                    }
+                  </p>
+                </div>
+                <p className="text-xs text-white/80 italic">
                   Your friend might be wrong - use your judgment!
                 </p>
               </div>
             )}
 
             {/* Prize Ladder */}
-            <div className="bg-gradient-to-r from-millionaire-gold to-millionaire-orange p-4 rounded-xl shadow-xl">
-              <h3 className="text-lg font-bold text-black mb-4">Prize Ladder</h3>
-              <div className="space-y-1 max-h-64 overflow-y-auto">
+            <div className={`bg-gradient-to-br from-orange-800/60 to-red-800/60 backdrop-blur-sm p-4 md:p-6 rounded-2xl shadow-xl border-2 border-orange-600/30 relative ${!showMobilePrizes ? 'hidden md:block' : ''}`}>
+              <div className="absolute top-3 left-3 w-2 h-2 bg-orange-400 rounded-full animate-pulse"></div>
+              <div className="absolute top-3 right-3 w-2 h-2 bg-red-400 rounded-full animate-pulse" style={{animationDelay: '0.5s'}}></div>
+              
+              <div className="flex items-center gap-2 mb-4">
+                <Award className="w-5 h-5 md:w-6 md:h-6 text-orange-400" />
+                <h3 className="text-base md:text-lg font-bold text-orange-100">Prize Ladder</h3>
+              </div>
+              
+              <div className="space-y-1 max-h-48 md:max-h-64 overflow-y-auto">
                 {PRIZE_LEVELS.slice().reverse().map((prize, index) => {
                   const actualIndex = PRIZE_LEVELS.length - 1 - index;
                   const isCurrent = actualIndex === gameState.currentQuestion;
@@ -436,16 +586,22 @@ const GameBoard: React.FC<GameBoardProps> = ({ onGameEnd }) => {
                   return (
                     <div
                       key={actualIndex}
-                      className={`prize-level text-sm ${
-                        isCurrent ? 'current' : isPassed ? 'safe' : ''
-                      }`}
+                      className={`
+                        p-2 md:p-3 rounded-lg text-xs md:text-sm transition-all duration-300 border
+                        ${isCurrent ? 'bg-gradient-to-r from-amber-600 to-orange-600 border-amber-400 text-white shadow-lg transform scale-105' : ''}
+                        ${isPassed ? 'bg-gradient-to-r from-green-700 to-emerald-700 border-green-500 text-green-100' : ''}
+                        ${!isCurrent && !isPassed ? 'bg-amber-900/30 border-amber-600/20 text-amber-200' : ''}
+                        ${isSafe ? 'border-l-4 border-l-yellow-400' : ''}
+                      `}
                     >
                       <div className="flex justify-between items-center">
-                        <span>{actualIndex + 1}.</span>
-                        <span className="font-bold">
-                          ${prize.toLocaleString()}
-                          {isSafe && <span className="ml-1">🛡️</span>}
-                        </span>
+                        <span className="font-medium">{actualIndex + 1}.</span>
+                        <div className="flex items-center gap-1">
+                          <span className="font-bold">
+                            ${prize.toLocaleString()}
+                          </span>
+                          {isSafe && <Castle className="w-3 h-3 md:w-4 md:h-4 text-yellow-400" />}
+                        </div>
                       </div>
                     </div>
                   );
