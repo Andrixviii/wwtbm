@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Who Wants to Be a HISTORY MASTER?',
-  description: 'Test your knowledge and win virtual millions in this classic game show experience!',
+  title: 'Jagoan Sejarah',
+  description: 'Jagoan Sejarah adalah permainan edukasi yang menguji pengetahuan sejarah kamu dengan cara yang menyenangkan. Tantang dirimu untuk menjawab pertanyaan-pertanyaan menarik dan raih gelar Jagoan Sejarah!',
 }
 
 export default function RootLayout({
@@ -14,10 +14,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="icon" href="/trophy.svg" type="image/svg+xml"/>
+        <link rel="icon" href="/trophy.png" type="image/png"/>
         <link rel="preconnect" href="https://fonts.googleapis.com"/>
         <link rel="preconnect" href="https://fonts.gstatic.com"/>
         <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet"></link>
+        <link rel="preconnect" href="https://fonts.googleapis.com"/>
+        <link rel="preconnect" href="https://fonts.gstatic.com"/>
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet"></link>
       </head>
       <body>{children}</body>
     </html>

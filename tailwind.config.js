@@ -16,7 +16,7 @@ module.exports = {
         'millionaire-brownOrange': '#E9A319',
       },
       fontFamily: {
-        'millionaire': ['Arial', 'sans-serif'],
+        'millionaire': ['Montserrat', 'sans-serif'],
       },
       animation: {
         'pulse-slow': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',

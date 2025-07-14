@@ -70,9 +70,9 @@ const MainMenu: React.FC<MainMenuProps> = ({ onStartGame }) => {
   ];
 
   const lifelines = [
-    { icon: Target, name: '50:50', description: 'Eliminate 2 wrong answers' },
-    { icon: Users, name: 'Ask Historian', description: 'Consult historical expert' },
-    { icon: Phone, name: 'Call Scholar', description: 'Contact academic friend' }
+    { icon: Target, name: '50:50', description: 'Mengahapus 2 jawaban salah' },
+    { icon: Users, name: 'Bertanya pada Ahli', description: 'Konsultasikan dengan ahli sejarah' },
+    { icon: Phone, name: 'Memanggil Teman', description: 'Menghubungi teman' }
   ];
 
   const renderFloatingIcon = (iconName: string) => {
@@ -129,11 +129,11 @@ const MainMenu: React.FC<MainMenuProps> = ({ onStartGame }) => {
             </div>
             
             <div className="space-y-2 mb-6">
-              <h1 className="text-3xl md:text-5xl font-bold bg-gradient-to-r from-amber-400 via-yellow-300 to-orange-400 bg-clip-text text-transparent">
-                Who Wants to Be a
+              <h1 className="text-3xl pb-1 md:text-5xl font-bold bg-gradient-to-r from-amber-400 via-yellow-300 to-orange-400 bg-clip-text text-transparent">
+                Siapa Yang Ingin Mejadi
               </h1>
               <h1 className="text-4xl md:text-7xl font-bold bg-gradient-to-r from-amber-400 via-yellow-300 to-orange-400 bg-clip-text text-transparent relative">
-                HISTORY MASTER?
+                JAGOAN SEJARAH
                 <div className="absolute -top-4 -right-4 w-8 h-8 bg-amber-400 rounded-full opacity-20 animate-ping"></div>
               </h1>
             </div>
@@ -147,22 +147,22 @@ const MainMenu: React.FC<MainMenuProps> = ({ onStartGame }) => {
               <div className="flex items-center justify-center gap-3 mb-4">
                 <History className="w-8 h-8 text-amber-400 animate-spin" style={{animationDuration: '8s'}} />
                 <p className="text-xl md:text-2xl text-amber-100 font-semibold">
-                  Test your knowledge of world history and win $1,000,000!
+                  Tes Pemahaman Sejarahmu dan Jadilah Jagoan Sejarah!
                 </p>
                 <Clock className="w-8 h-8 text-orange-400 animate-pulse" />
               </div>
               <div className="flex items-center justify-center gap-6 text-sm text-amber-200/80">
                 <div className="flex items-center gap-2">
                   <Scroll className="w-4 h-4 text-amber-400" />
-                  <span>15 Historical Questions</span>
+                  <span>Ada 15 Pertanyaan</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Shield className="w-4 h-4 text-orange-400" />
-                  <span>3 Safe Checkpoints</span>
+                  <span>3 Cek Poin</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Zap className="w-4 h-4 text-red-400" />
-                  <span>3 Scholar Helps</span>
+                  <span>3 Bantuan Jawaban</span>
                 </div>
               </div>
             </div>
@@ -179,7 +179,7 @@ const MainMenu: React.FC<MainMenuProps> = ({ onStartGame }) => {
               <div className="absolute inset-0 bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl blur opacity-50 group-hover:opacity-75 transition-opacity duration-300"></div>
               <div className="relative flex items-center justify-center gap-4">
                 <Play className={`w-8 h-8 transition-transform duration-300 ${isHovered ? 'translate-x-2' : ''}`} />
-                <span className="tracking-wide">BEGIN HISTORICAL JOURNEY</span>
+                <span className="tracking-wide">MULAI PERMAINAN</span>
                 <ChevronRight className={`w-8 h-8 transition-transform duration-300 ${isHovered ? 'translate-x-2' : ''}`} />
               </div>
               <div className="absolute -top-1 -right-1 w-4 h-4 bg-amber-300 rounded-full animate-ping opacity-75"></div>
@@ -199,7 +199,7 @@ const MainMenu: React.FC<MainMenuProps> = ({ onStartGame }) => {
               >
                 <div className="flex items-center gap-3">
                   <Scroll className="w-6 h-6 text-amber-400" />
-                  <h3 className="text-xl font-bold text-amber-100">Rules of the Quest</h3>
+                  <h3 className="text-xl font-bold text-amber-100">Aturan Permainan</h3>
                 </div>
                 <ChevronRight className={`w-5 h-5 text-amber-100 transition-transform duration-300 ${showRules ? 'rotate-90' : ''}`} />
               </button>
@@ -208,27 +208,27 @@ const MainMenu: React.FC<MainMenuProps> = ({ onStartGame }) => {
                 <div className="space-y-3 text-amber-200/90 text-left animate-in slide-in-from-top duration-300">
                   <div className="flex items-center gap-3">
                     <div className="w-2 h-2 bg-amber-400 rounded-full"></div>
-                    <p>Answer 15 historical questions correctly to claim victory</p>
+                    <p>Jawab 15 pertanyaan dengan benar untuk meraih kemenangan</p>
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
-                    <p>Each correct answer advances you through time periods</p>
+                    <p>Setiap jawaban benar akan membawa Anda maju ke tingkat berikutnya</p>
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="w-2 h-2 bg-red-400 rounded-full"></div>
-                    <p>Use 3 scholarly lifelines when knowledge fails you</p>
+                    <p>Gunakan 3 bantuan jawaban ketika Anda mengalami kesulitan</p>
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
-                    <p>Safe checkpoints protect your historical treasures</p>
+                    <p>Titik aman melindungi hadiah utama Anda</p>
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="w-2 h-2 bg-amber-300 rounded-full"></div>
-                    <p>Withdraw anytime to preserve your accumulated knowledge</p>
+                    <p>Anda dapat menyerah kapan saja untuk mendapatkan hadiahnya</p>
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="w-2 h-2 bg-orange-300 rounded-full"></div>
-                    <p>One wrong answer erases progress (except at safe levels)</p>
+                    <p>Satu jawaban salah menghapus kemajuan (kecuali di level aman)</p>
                   </div>
                 </div>
               )}
@@ -245,7 +245,7 @@ const MainMenu: React.FC<MainMenuProps> = ({ onStartGame }) => {
               >
                 <div className="flex items-center gap-3">
                   <Award className="w-6 h-6 text-orange-400" />
-                  <h3 className="text-xl font-bold text-amber-100">Treasure Rewards</h3>
+                  <h3 className="text-xl font-bold text-amber-100">Hadiah Utama</h3>
                 </div>
                 <ChevronRight className={`w-5 h-5 text-amber-100 transition-transform duration-300 ${showPrizes ? 'rotate-90' : ''}`} />
               </button>
@@ -278,7 +278,7 @@ const MainMenu: React.FC<MainMenuProps> = ({ onStartGame }) => {
             
             <div className="flex items-center justify-center gap-2 mb-4">
               <Flame className="w-6 h-6 text-red-400" />
-              <h3 className="text-xl font-bold text-amber-100">Scholar's Assistance</h3>
+              <h3 className="text-xl font-bold text-amber-100">Bantuan</h3> 
             </div>
             <div className="grid grid-cols-3 gap-4">
               {lifelines.map((lifeline, index) => (

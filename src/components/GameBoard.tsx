@@ -258,14 +258,14 @@ const GameBoard: React.FC<GameBoardProps> = ({ onGameEnd }) => {
           </div>
           <Trophy className="w-20 h-20 mx-auto mb-6 text-amber-900 animate-pulse" />
           <h1 className="text-4xl font-bold text-amber-900 mb-4">
-            {gameState.score === questions.length - 1 ? 'MILLIONAIRE!' : 'Congratulations!'}
+            {gameState.score === questions.length - 1 ? 'JAGOAN SEJARAH' : 'Congratulations!'}
           </h1>
           <p className="text-2xl text-amber-900 mb-6 font-semibold">
-            You won: ${PRIZE_LEVELS[gameState.score]?.toLocaleString() || '0'}
+            Kamu Mendapatkan: ${PRIZE_LEVELS[gameState.score]?.toLocaleString() || '0'}
           </p>
           <div className="flex items-center justify-center gap-2 mb-6">
             <Award className="w-6 h-6 text-amber-900" />
-            <span className="text-amber-900 font-medium">You mastered the challenge!</span>
+            <span className="text-amber-900 font-medium">Kamu adalah Jagoan Sejarah, Semoga ilmu yang kamu dapatkan bermanfaat!</span>
           </div>
           <button
             onClick={onGameEnd}
@@ -273,7 +273,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onGameEnd }) => {
           >
             <div className="flex items-center justify-center gap-2">
               <History className="w-5 h-5" />
-              <span>Play Again</span>
+              <span>Main Lagi</span>
             </div>
           </button>
         </div>
@@ -292,11 +292,11 @@ const GameBoard: React.FC<GameBoardProps> = ({ onGameEnd }) => {
           <AlertCircle className="w-20 h-20 mx-auto mb-6 text-red-100 animate-pulse" />
           <h1 className="text-4xl font-bold text-red-100 mb-4">Game Over!</h1>
           <p className="text-2xl text-red-100 mb-6 font-semibold">
-            You won: ${PRIZE_LEVELS[gameState.score]?.toLocaleString() || '0'}
+            Kamu Mendapatkan: ${PRIZE_LEVELS[gameState.score]?.toLocaleString() || '0'}
           </p>
           <div className="flex items-center justify-center gap-2 mb-6">
             <Scroll className="w-6 h-6 text-red-100" />
-            <span className="text-red-100 font-medium">Try again next time!</span>
+            <span className="text-red-100 font-medium">Coba lagi lain kali ya!</span>
           </div>
           <button
             onClick={onGameEnd}
@@ -304,7 +304,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onGameEnd }) => {
           >
             <div className="flex items-center justify-center gap-2">
               <History className="w-5 h-5" />
-              <span>Play Again</span>
+              <span>Main Lagi</span>
             </div>
           </button>
         </div>
@@ -328,8 +328,8 @@ const GameBoard: React.FC<GameBoardProps> = ({ onGameEnd }) => {
         <div className="flex justify-between items-center mb-4 md:mb-6 bg-gradient-to-r from-amber-800/50 to-orange-800/50 backdrop-blur-sm rounded-xl p-4 border border-amber-600/30">
           <div className="flex items-center gap-3">
             <BookOpen className="w-6 h-6 md:w-8 md:h-8 text-amber-400" />
-            <h1 className="text-lg md:text-2xl font-bold text-amber-100">
-              Who Wants to Be a Millionaire?
+            <h1 className="font-millionaire text-lg md:text-2xl font-bold text-amber-100">
+              Jagoan Sejarah
             </h1>
           </div>
           <button
@@ -348,7 +348,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onGameEnd }) => {
             className="flex-1 bg-gradient-to-r from-purple-700 to-blue-700 text-white px-4 py-3 rounded-xl font-semibold flex items-center justify-center gap-2"
           >
             <Flame className="w-5 h-5" />
-            Lifelines
+            Bantuan
             {showMobileLifelines ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
           </button>
           <button
@@ -356,7 +356,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onGameEnd }) => {
             className="flex-1 bg-gradient-to-r from-orange-700 to-red-700 text-white px-4 py-3 rounded-xl font-semibold flex items-center justify-center gap-2"
           >
             <Coins className="w-5 h-5" />
-            Prizes
+            Hadiah Utama
             {showMobilePrizes ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
           </button>
         </div>
@@ -372,7 +372,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onGameEnd }) => {
                 <div className="flex items-center gap-3">
                   <Scroll className="w-6 h-6 text-amber-400" />
                   <h2 className="text-lg md:text-xl font-bold text-amber-100">
-                    Question {gameState.currentQuestion + 1} of {questions.length}
+                    Pertanyaan {gameState.currentQuestion + 1} dari {questions.length}
                   </h2>
                 </div>
                 {/* Timer (dummy, bisa diisi logic timer jika mau) */}
@@ -439,7 +439,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onGameEnd }) => {
                 className="flex-1 md:flex-none bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 disabled:from-gray-600 disabled:to-gray-500 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 disabled:scale-100 disabled:cursor-not-allowed shadow-lg flex items-center justify-center gap-2"
               >
                 <CheckCircle className="w-5 h-5" />
-                <span>Final Answer</span>
+                <span>Jawaban Akhir</span>
               </button>
               <button
                 onClick={handleWalkAway}
@@ -447,7 +447,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onGameEnd }) => {
                 className="flex-1 md:flex-none bg-gradient-to-r from-red-700 to-red-600 hover:from-red-600 hover:to-red-500 disabled:from-gray-600 disabled:to-gray-500 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 disabled:scale-100 disabled:cursor-not-allowed shadow-lg flex items-center justify-center gap-2"
               >
                 <Home className="w-5 h-5" />
-                <span>Walk Away</span>
+                <span>Mundur</span>
               </button>
             </div>
           </div>
@@ -461,7 +461,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onGameEnd }) => {
               
               <div className="flex items-center gap-2 mb-4">
                 <Flame className="w-5 h-5 md:w-6 md:h-6 text-purple-400" />
-                <h3 className="text-base md:text-lg font-bold text-purple-100">Lifelines</h3>
+                <h3 className="text-base md:text-lg font-bold text-purple-100">Bantuan</h3>
               </div>
               
               <div className="space-y-3">
@@ -488,7 +488,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onGameEnd }) => {
                   }`}
                 >
                   <Users className="w-4 h-4 md:w-5 md:h-5" />
-                  <span>Ask Audience</span>
+                  <span>Bertanya pada Ahli</span>
                 </button>
                 
                 <button
@@ -501,7 +501,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onGameEnd }) => {
                   }`}
                 >
                   <PhoneCall className="w-4 h-4 md:w-5 md:h-5" />
-                  <span>Phone a Friend</span>
+                  <span>Memanggil Teman</span>
                 </button>
               </div>
             </div>
@@ -587,7 +587,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onGameEnd }) => {
               
               <div className="flex items-center gap-2 mb-4">
                 <Award className="w-5 h-5 md:w-6 md:h-6 text-orange-400" />
-                <h3 className="text-base md:text-lg font-bold text-orange-100">Prize Ladder</h3>
+                <h3 className="text-base md:text-lg font-bold text-orange-100">Hadiah Utama</h3>
               </div>
               
               <div className="space-y-1 max-h-48 md:max-h-64 overflow-y-auto">
