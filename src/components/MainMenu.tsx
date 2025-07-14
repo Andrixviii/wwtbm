@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { BookOpen, Play, Info, Scroll, Flame, Crown, MapPin, Users, Phone, Target, Shield, Zap, ChevronRight, Award, Gem, History, Globe, Sword, Castle, Clock, Star } from 'lucide-react';
 
 interface MainMenuProps {
@@ -11,6 +11,33 @@ const MainMenu: React.FC<MainMenuProps> = ({ onStartGame }) => {
   const [showPrizes, setShowPrizes] = useState(false);
   const [floatingElements, setFloatingElements] = useState<Array<{x: number, y: number, delay: number, icon: string}>>([]);
   const [isHovered, setIsHovered] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [musicStarted, setMusicStarted] = useState(false);
+
+  useEffect(() => {
+    audioRef.current = new Audio('/sfx/op.mp3');
+    audioRef.current.loop = true;
+    audioRef.current.volume = 0.7;
+    // Jangan langsung play di sini!
+    return () => {
+      audioRef.current?.pause();
+      audioRef.current = null;
+    };
+  }, []);
+
+  // Fungsi untuk mulai musik saat interaksi user
+  const handleStartMusic = () => {
+    if (!musicStarted && audioRef.current) {
+      audioRef.current.play();
+      setMusicStarted(true);
+    }
+  };
+
+  // Saat tombol Start Game diklik, pause musik dan lanjut ke game
+  const handleStartGameClick = () => {
+    audioRef.current?.pause();
+    onStartGame();
+  };
 
   useEffect(() => {
     
@@ -61,7 +88,10 @@ const MainMenu: React.FC<MainMenuProps> = ({ onStartGame }) => {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-amber-900 via-orange-900 to-red-900">
+    <div
+      className="min-h-screen relative overflow-hidden bg-gradient-to-br from-amber-900 via-orange-900 to-red-900"
+      onMouseEnter={handleStartMusic}
+    >
       {/* Parchment texture overlay */}
       <div className="absolute inset-0 opacity-10 bg-gradient-to-br from-yellow-200 to-amber-200 mix-blend-overlay"></div>
       
@@ -141,7 +171,7 @@ const MainMenu: React.FC<MainMenuProps> = ({ onStartGame }) => {
           {/* Main Action Button */}
           <div className="mb-8">
             <button
-              onClick={onStartGame}
+              onClick={handleStartGameClick}
               onMouseEnter={() => setIsHovered(true)}
               onMouseLeave={() => setIsHovered(false)}
               className="group relative bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white font-bold text-xl md:text-2xl py-6 px-12 rounded-2xl shadow-2xl transform transition-all duration-300 hover:scale-105 hover:shadow-amber-600/50 active:scale-95 border-2 border-amber-500"
@@ -265,7 +295,7 @@ const MainMenu: React.FC<MainMenuProps> = ({ onStartGame }) => {
         </div>
       </div>
 
-      <style jsx>{`
+      {/* <style jsx>{`
         @keyframes float {
           0%, 100% { transform: translateY(0px) rotate(0deg); }
           50% { transform: translateY(-20px) rotate(180deg); }
@@ -273,7 +303,7 @@ const MainMenu: React.FC<MainMenuProps> = ({ onStartGame }) => {
         .animate-float {
           animation: float 6s ease-in-out infinite;
         }
-      `}</style>
+      `}</style> */}
     </div>
   );
 };

@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Question, GameState, PRIZE_LEVELS, SAFE_LEVELS } from '../types/game';
 import FuzzyText from '../components/ui/fuzzyText';
+import Loader from '../components/ui/Loader';
 import {
   Phone, Users, Scissors, Trophy, Home, BookOpen, Scroll, Crown,
   Castle, Clock, Award, History, Globe, Flame, Target, PhoneCall,
@@ -33,11 +34,10 @@ const GameBoard: React.FC<GameBoardProps> = ({ onGameEnd }) => {
   const [audienceLoading, setAudienceLoading] = useState(false);
   const [friendLoading, setFriendLoading] = useState(false);
   const [showContent, setShowContent] = useState(false);
-
-  // Custom UI states
   const [showMobileLifelines, setShowMobileLifelines] = useState(false);
   const [showMobilePrizes, setShowMobilePrizes] = useState(false);
   const [pulseAnswer, setPulseAnswer] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => setShowContent(true), 1500);
@@ -73,10 +73,24 @@ const GameBoard: React.FC<GameBoardProps> = ({ onGameEnd }) => {
     }
   }, [gameState.selectedAnswer]);
 
+  useEffect(() => {
+    audioRef.current = new Audio('/sfx/game-board.mp3');
+    audioRef.current.loop = true;
+    audioRef.current.volume = 0.7;
+
+    audioRef.current.play().catch(() => {
+    });
+
+    return () => {
+      audioRef.current?.pause();
+      audioRef.current = null;
+    };
+  }, []);
+
   if (!showContent || loading) {
     return (
       <div className='flex flex-col items-center justify-center min-h-screen'>
-        <p className='text-lg font-bold text-orange-400'>Searching....</p>
+       <Loader />
       </div>
     );
   }
