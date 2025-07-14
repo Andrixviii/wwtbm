@@ -15,7 +15,7 @@ const MainMenu: React.FC<MainMenuProps> = ({ onStartGame }) => {
   const [musicStarted, setMusicStarted] = useState(false);
 
   useEffect(() => {
-    audioRef.current = new Audio('/sfx/op.mp3');
+    audioRef.current = new Audio('/sfx/op.m4a');
     audioRef.current.loop = true;
     audioRef.current.volume = 0.7;
     // Jangan langsung play di sini!
