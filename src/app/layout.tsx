@@ -4,6 +4,9 @@ import './globals.css'
 export const metadata: Metadata = {
   title: 'Jagoan Sejarah',
   description: 'Jagoan Sejarah adalah permainan edukasi yang menguji pengetahuan sejarah kamu dengan cara yang menyenangkan. Tantang dirimu untuk menjawab pertanyaan-pertanyaan menarik dan raih gelar Jagoan Sejarah!',
+  manifest: '/manifest.json',
+  themeColor: '#78350f',
+  viewport: 'width=device-width, initial-scale=1, maximum-scale=1',
 }
 
 export default function RootLayout({
