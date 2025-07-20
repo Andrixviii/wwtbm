@@ -20,6 +20,9 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet"></link>
         <link rel="preconnect" href="https://fonts.googleapis.com"/>
         <link rel="preconnect" href="https://fonts.gstatic.com"/>
+        <meta name="robots" content="index, follow" />
+        <meta name="description" content="Jagoan Sejarah adalah permainan edukasi yang menguji pengetahuan sejarah kamu dengan cara yang menyenangkan." />
+        <link rel="canonical" href="https://jagoan-sejarah.vercel.app/" />
         <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet"></link>
       </head>
       <body>{children}</body>
