@@ -9,6 +9,7 @@ import {
   Castle, Clock, Award, History, Globe, Flame, Target, PhoneCall,
   AlertCircle, CheckCircle, XCircle, Eye, EyeOff, Coins
 } from 'lucide-react';
+import { soundManager } from '../config/sounds';
 
 interface GameBoardProps {
   onGameEnd: () => void;
@@ -73,17 +74,13 @@ const GameBoard: React.FC<GameBoardProps> = ({ onGameEnd }) => {
     }
   }, [gameState.selectedAnswer]);
 
+  // Setup sounds
   useEffect(() => {
-    audioRef.current = new Audio('/sfx/game-board.mp3');
-    audioRef.current.loop = true;
-    audioRef.current.volume = 0.7;
-
-    audioRef.current.play().catch(() => {
-    });
+    soundManager.preload('gameBoard');
+    soundManager.play('gameBoard');
 
     return () => {
-      audioRef.current?.pause();
-      audioRef.current = null;
+      soundManager.stop('gameBoard');
     };
   }, []);
 
@@ -114,8 +111,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onGameEnd }) => {
       const isCorrect = gameState.selectedAnswer === currentQuestion.correctAnswer;
 
       if (isCorrect) {
-        const audio = new Audio('/sfx/correct.mp3');
-        audio.play();
+        soundManager.play('correct');
         const newScore = gameState.currentQuestion;
 
         if (gameState.currentQuestion === questions.length - 1) {
@@ -136,8 +132,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onGameEnd }) => {
           }));
         }
       } else {
-        const audio = new Audio('/sfx/wrong.mp3');
-        audio.play();
+        soundManager.play('wrong');
         const safeLevel = SAFE_LEVELS.filter(level => level <= gameState.currentQuestion).pop();
         const finalScore = safeLevel !== undefined ? safeLevel : 0;
         setGameState(prev => ({ ...prev, gameStatus: 'lost', score: finalScore }));
@@ -146,6 +141,11 @@ const GameBoard: React.FC<GameBoardProps> = ({ onGameEnd }) => {
   };
 
   const handleWalkAway = () => {
+    soundManager.fade('gameBoard', 0.7, 0, 1000);
+    setTimeout(() => {
+      soundManager.stop('gameBoard');
+    }, 1000);
+    
     const safeLevel = SAFE_LEVELS.filter(level => level < gameState.currentQuestion).pop();
     const finalScore = safeLevel !== undefined ? safeLevel : gameState.currentQuestion - 1;
     setGameState(prev => ({ ...prev, gameStatus: 'won', score: Math.max(0, finalScore) }));
@@ -250,6 +250,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onGameEnd }) => {
 
   // WIN SCREEN
   if (gameState.gameStatus === 'won') {
+    soundManager.stop('gameBoard');
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-amber-900 via-orange-900 to-red-900">
         <div className="bg-gradient-to-r from-amber-600 to-orange-600 p-8 rounded-2xl shadow-2xl text-center max-w-md w-full border-2 border-amber-400 relative">
@@ -283,6 +284,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ onGameEnd }) => {
 
   // LOSS SCREEN
   if (gameState.gameStatus === 'lost') {
+    soundManager.stop('gameBoard');
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-red-900 via-orange-900 to-amber-900">
         <div className="bg-gradient-to-r from-red-600 to-red-500 p-8 rounded-2xl shadow-2xl text-center max-w-md w-full border-2 border-red-400 relative">

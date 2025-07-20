@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
 import { BookOpen, Play, Info, Scroll, Flame, Crown, MapPin, Users, Phone, Target, Shield, Zap, ChevronRight, Award, Gem, History, Globe, Sword, Castle, Clock, Star } from 'lucide-react';
+import { soundManager } from '../config/sounds';
 
 interface MainMenuProps {
   onStartGame: () => void;
@@ -11,32 +12,28 @@ const MainMenu: React.FC<MainMenuProps> = ({ onStartGame }) => {
   const [showPrizes, setShowPrizes] = useState(false);
   const [floatingElements, setFloatingElements] = useState<Array<{x: number, y: number, delay: number, icon: string}>>([]);
   const [isHovered, setIsHovered] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
   const [musicStarted, setMusicStarted] = useState(false);
 
   useEffect(() => {
-    audioRef.current = new Audio('/sfx/op.m4a');
-    audioRef.current.loop = true;
-    audioRef.current.volume = 0.7;
-    // Jangan langsung play di sini!
+    soundManager.preload('mainMenu');
     return () => {
-      audioRef.current?.pause();
-      audioRef.current = null;
+      soundManager.stop('mainMenu');
     };
   }, []);
 
-  // Fungsi untuk mulai musik saat interaksi user
   const handleStartMusic = () => {
-    if (!musicStarted && audioRef.current) {
-      audioRef.current.play();
+    if (!musicStarted) {
+      soundManager.play('mainMenu');
       setMusicStarted(true);
     }
   };
 
-  // Saat tombol Start Game diklik, pause musik dan lanjut ke game
   const handleStartGameClick = () => {
-    audioRef.current?.pause();
-    onStartGame();
+    soundManager.fade('mainMenu', 0.7, 0, 1000);
+    setTimeout(() => {
+      soundManager.stop('mainMenu');
+      onStartGame();
+    }, 1000);
   };
 
   useEffect(() => {
